@@ -43,6 +43,11 @@ var MemoryCache = (function () {
         value: function remove(key) {
             delete this.cache[key];
         }
+    }, {
+        key: "clearAll",
+        value: function clearAll() {
+            this.cache = {};
+        }
     }]);
 
     return MemoryCache;

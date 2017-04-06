@@ -30,6 +30,7 @@ declare module 'caching/memory-cache' {
 	    set<T>(key: string, value: T, durationMS?: any): void;
 	    get<T>(key: string): T;
 	    remove(key: string): void;
+	    clearAll(): void;
 	}
 
 }

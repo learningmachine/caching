@@ -28,5 +28,8 @@ export class MemoryCache implements Cache {
   remove(key: string) {
     delete this.cache[key];
   }
-}
 
+  clearAll() {
+    this.cache = {};
+  }
+}
