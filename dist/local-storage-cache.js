@@ -10,6 +10,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var _helpers = require("./helpers");
 
+var _memoryCache = require("./memory-cache");
+
+var canUseLocalStorage = true;
+var fallback = null;
+try {
+    localStorage.setItem("__testing", "__testing");
+    localStorage.removeItem("__testing");
+} catch (err) {
+    canUseLocalStorage = false;
+    fallback = new _memoryCache.MemoryCache();
+}
+
 var LocalStorageCache = (function () {
     function LocalStorageCache() {
         _classCallCheck(this, LocalStorageCache);
@@ -18,12 +30,14 @@ var LocalStorageCache = (function () {
     _createClass(LocalStorageCache, [{
         key: "set",
         value: function set(key, value, durationMS) {
+            if (!canUseLocalStorage) return fallback.set(key, value, durationMS);
             var expire = durationMS ? Date.now() + durationMS : null;
             localStorage[key] = JSON.stringify({ value: value, expire: expire });
         }
     }, {
         key: "get",
         value: function get(key) {
+            if (!canUseLocalStorage) return fallback.get(key);
             var val = JSON.parse(localStorage[key] || "null");
             if (val) {
                 if (!(0, _helpers.isExpired)(val)) {
@@ -37,6 +51,7 @@ var LocalStorageCache = (function () {
     }, {
         key: "remove",
         value: function remove(key) {
+            if (!canUseLocalStorage) return fallback.remove(key);
             delete localStorage[key];
         }
     }]);
