@@ -2,7 +2,7 @@ import { Cache, cacheEntries } from "./cache";
 import { isExpired } from "./helpers";
 
 export class CookieCache implements Cache {
-  constructor(private CookieName = "__cookie_cache") { }
+  constructor(private CookieName = "__cookie_cache") {}
 
   set<T>(key: string, value: T, durationMS = null) {
     const expire = durationMS ? Date.now() + durationMS : null;
@@ -34,7 +34,14 @@ export class CookieCache implements Cache {
   }
 
   private getCacheEntries(): cacheEntries {
-    const decoded = window.atob(document.cookie.replace(new RegExp("(?:(?:^|.*;\\s*)" + this.CookieName + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1"));
+    const decoded = window.atob(
+      document.cookie.replace(
+        new RegExp(
+          "(?:(?:^|.*;\\s*)" + this.CookieName + "\\s*\\=\\s*([^;]*).*$)|^.*$",
+        ),
+        "$1",
+      ),
+    );
     return JSON.parse(decoded || "{}");
   }
 
@@ -43,4 +50,3 @@ export class CookieCache implements Cache {
     document.cookie = this.CookieName + "=" + encoded + ";  expires=0; path=/";
   }
 }
-

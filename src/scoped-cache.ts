@@ -1,7 +1,7 @@
 import { Cache } from "./cache";
 
 export class ScopedCache implements Cache {
-  constructor(private scope: string, private cache: Cache) { }
+  constructor(private scope: string, private cache: Cache) {}
 
   setScope(scope: string) {
     this.scope = scope;

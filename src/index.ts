@@ -4,4 +4,5 @@ export { cacheFor } from "./helpers";
 export { MemoryCache } from "./memory-cache";
 export { CookieCache } from "./cookie-cache";
 export { LocalStorageCache } from "./local-storage-cache";
+export { SessionStorageCache } from "./session-storage-cache";
 export { ScopedCache } from "./scoped-cache";

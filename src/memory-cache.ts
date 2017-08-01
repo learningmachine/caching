@@ -1,7 +1,6 @@
 import { Cache, cacheEntries } from "./cache";
 import { isExpired } from "./helpers";
 
-
 export class MemoryCache implements Cache {
   private cache: cacheEntries = {};
 

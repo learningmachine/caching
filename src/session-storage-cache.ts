@@ -7,16 +7,16 @@ import {
   setVal,
 } from "./local-session-utils";
 
-export class LocalStorageCache implements Cache {
+export class SessionStorageCache implements Cache {
   public set<T>(key: string, value: T, durationMS?: number): void {
-    return setVal<T>(LocalOrSession.Local, key, value, durationMS);
+    return setVal<T>(LocalOrSession.Session, key, value, durationMS);
   }
 
   public get<T>(key: string): T {
-    return getVal<T>(LocalOrSession.Local, key);
+    return getVal<T>(LocalOrSession.Session, key);
   }
 
   public remove(key: string): void {
-    return removeVal(LocalOrSession.Local, key);
+    return removeVal(LocalOrSession.Session, key);
   }
 }

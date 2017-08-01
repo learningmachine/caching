@@ -6,6 +6,7 @@ declare module 'caching' {
     export { MemoryCache } from "caching/memory-cache";
     export { CookieCache } from "caching/cookie-cache";
     export { LocalStorageCache } from "caching/local-storage-cache";
+    export { SessionStorageCache } from "caching/session-storage-cache";
     export { ScopedCache } from "caching/scoped-cache";
 }
 
@@ -57,6 +58,15 @@ declare module 'caching/cookie-cache' {
 declare module 'caching/local-storage-cache' {
     import { Cache } from "caching/cache";
     export class LocalStorageCache implements Cache {
+        set<T>(key: string, value: T, durationMS?: number): void;
+        get<T>(key: string): T;
+        remove(key: string): void;
+    }
+}
+
+declare module 'caching/session-storage-cache' {
+    import { Cache } from "caching/cache";
+    export class SessionStorageCache implements Cache {
         set<T>(key: string, value: T, durationMS?: number): void;
         get<T>(key: string): T;
         remove(key: string): void;

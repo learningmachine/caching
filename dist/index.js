@@ -135,15 +135,74 @@ var CookieCache = function () {
     return CookieCache;
 }();
 
+var LocalOrSession;
+(function (LocalOrSession) {
+    LocalOrSession[LocalOrSession["Local"] = 0] = "Local";
+    LocalOrSession[LocalOrSession["Session"] = 1] = "Session";
+})(LocalOrSession || (LocalOrSession = {}));
 var canUseLocalStorage = true;
-var fallback = null;
+var canUseSessionStorage = true;
+var localFallBack = new MemoryCache();
+var sessionFallBack = new MemoryCache();
 try {
     localStorage.setItem("__testing", "__testing");
     localStorage.removeItem("__testing");
 } catch (err) {
     canUseLocalStorage = false;
-    fallback = new MemoryCache();
 }
+try {
+    sessionStorage.setItem("__testing", "__testing");
+    sessionStorage.removeItem("__testing");
+} catch (err) {
+    canUseSessionStorage = false;
+}
+var setVal = function setVal(s, key, value, durationMS) {
+    var expire = durationMS ? Date.now() + durationMS : null;
+    switch (s) {
+        case LocalOrSession.Local:
+            if (!canUseLocalStorage) return localFallBack.set(key, value, durationMS);
+            localStorage[key] = JSON.stringify({ value: value, expire: expire });
+            break;
+        case LocalOrSession.Session:
+            if (!canUseSessionStorage) return sessionFallBack.set(key, value, durationMS);
+            sessionStorage[key] = JSON.stringify({ value: value, expire: expire });
+            break;
+    }
+};
+var getVal = function getVal(s, key) {
+    var val = null;
+    switch (s) {
+        case LocalOrSession.Local:
+            if (!canUseLocalStorage) return localFallBack.get(key);
+            val = JSON.parse(localStorage[key] || "null");
+            break;
+        case LocalOrSession.Session:
+            if (!canUseSessionStorage) return sessionFallBack.get(key);
+            val = JSON.parse(sessionStorage[key] || "null");
+            break;
+    }
+    if (val) {
+        if (!isExpired(val)) {
+            return val.value;
+        } else {
+            removeVal(s, key);
+        }
+    }
+    return null;
+};
+var removeVal = function removeVal(s, key) {
+    switch (s) {
+        case LocalOrSession.Local:
+            if (!canUseLocalStorage) return localFallBack.remove(key);
+            delete localStorage[key];
+            break;
+        case LocalOrSession.Session:
+            if (!canUseSessionStorage) return sessionFallBack.remove(key);
+            delete sessionStorage[key];
+            break;
+    }
+};
+
 var LocalStorageCache = function () {
     function LocalStorageCache() {
         classCallCheck(this, LocalStorageCache);
@@ -152,32 +211,44 @@ var LocalStorageCache = function () {
     createClass(LocalStorageCache, [{
         key: "set",
         value: function set$$1(key, value, durationMS) {
-            if (!canUseLocalStorage) return fallback.set(key, value, durationMS);
-            var expire = durationMS ? Date.now() + durationMS : null;
-            localStorage[key] = JSON.stringify({ value: value, expire: expire });
+            return setVal(LocalOrSession.Local, key, value, durationMS);
         }
     }, {
         key: "get",
         value: function get$$1(key) {
-            if (!canUseLocalStorage) return fallback.get(key);
-            var val = JSON.parse(localStorage[key] || "null");
-            if (val) {
-                if (!isExpired(val)) {
-                    return val.value;
-                } else {
-                    this.remove(key);
-                }
-            }
-            return null;
+            return getVal(LocalOrSession.Local, key);
         }
     }, {
         key: "remove",
         value: function remove(key) {
-            if (!canUseLocalStorage) return fallback.remove(key);
-            delete localStorage[key];
+            return removeVal(LocalOrSession.Local, key);
         }
     }]);
     return LocalStorageCache;
+}();
+
+var SessionStorageCache = function () {
+    function SessionStorageCache() {
+        classCallCheck(this, SessionStorageCache);
+    }
+
+    createClass(SessionStorageCache, [{
+        key: "set",
+        value: function set$$1(key, value, durationMS) {
+            return setVal(LocalOrSession.Session, key, value, durationMS);
+        }
+    }, {
+        key: "get",
+        value: function get$$1(key) {
+            return getVal(LocalOrSession.Session, key);
+        }
+    }, {
+        key: "remove",
+        value: function remove(key) {
+            return removeVal(LocalOrSession.Session, key);
+        }
+    }]);
+    return SessionStorageCache;
 }();
 
 var ScopedCache = function () {
@@ -214,4 +285,4 @@ var ScopedCache = function () {
     return ScopedCache;
 }();
 
-export { Cache, cacheFor, MemoryCache, CookieCache, LocalStorageCache, ScopedCache };
+export { Cache, cacheFor, MemoryCache, CookieCache, LocalStorageCache, SessionStorageCache, ScopedCache };
