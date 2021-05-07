@@ -1,5 +1,5 @@
 {
-  "name": "caching",
+  "name": "@learningmachine/caching",
   "version": "0.1.6",
   "description": "",
   "main": "dist/index-cjs.js",
