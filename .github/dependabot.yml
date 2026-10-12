@@ -2,7 +2,7 @@ version: 2
 registries:
   cloudsmith-npm:
     type: npm-registry
-    url: https://dl.cloudsmith.io/hyland/cic-unified-shared-libs/npm/
+    url: https://npm.artifacts.hyland.dev/cic-unified-shared-libs/
     namespace: hyland
     service-slug: learningmachine-dependabot
     audience: https://www.github.com/learningmachine
