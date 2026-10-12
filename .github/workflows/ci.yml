@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:  # allows manual trigger from GitHub Actions tab
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Set Cloudsmith OIDC service slug
+        run: |
+            REPOSITORY_NAME="$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]' | tr '/.' '-' )"
+            echo "CLOUDSMITH_OIDC_SERVICE_SLUG=${REPOSITORY_NAME}" >> "$GITHUB_ENV"
+
+      - name: Authenticate with Cloudsmith
+        uses: cloudsmith-io/cloudsmith-cli-action@ad73fafb92e3e29a5166c529464c2df7658a608e #v3.1.0
+        with:
+          oidc-namespace: ${{ vars.CLOUDSMITH_NAMESPACE }}
+          oidc-service-slug: ${{ env.CLOUDSMITH_OIDC_SERVICE_SLUG }}
+          export-auth-token: "true"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build --if-present
