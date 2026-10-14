@@ -1,0 +1,21 @@
+version: 2
+registries:
+  cloudsmith-npm:
+    type: npm-registry
+    url: https://npm.artifacts.hyland.dev/cic-unified-shared-libs/
+    namespace: hyland
+    service-slug: learningmachine-dependabot
+    audience: https://www.github.com/learningmachine
+
+updates:
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: 'fix'
+      include: 'scope'
+      prefix-development: 'chore'
+    registries:
+      - cloudsmith-npm
