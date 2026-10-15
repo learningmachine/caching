@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/learningmachine/caching/compare/v1.0.0...v1.0.1) (2026-10-15)
+
+
+### Bug Fixes
+
+* **build:** match dts-bundle module name to the published package name ([f8f3136](https://github.com/learningmachine/caching/commit/f8f3136b77427ad05f805d3c77a5f7aecc77c468))
+
 # 1.0.0 (2026-10-14)
 
 
